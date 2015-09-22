@@ -24,7 +24,7 @@ class Tweet: NSObject{
         createdAtString = dictionary["created_at"] as? String
         tweetId = String(stringInterpolationSegment: dictionary["id"]!) as String
         
-        var formatter = NSDateFormatter()
+        let formatter = NSDateFormatter()
         formatter.dateFormat = "EEE MMM d HH:mm:ss Z y"
         createdAt = formatter.dateFromString(createdAtString!)
     }
@@ -36,7 +36,7 @@ class Tweet: NSObject{
         for dictionary in array {
             /*println(dictionary)
             println("%%%%%%%%%%%%%%%%")*/
-            var tweet = Tweet(dictionary: dictionary as NSDictionary)
+            let tweet = Tweet(dictionary: dictionary as NSDictionary)
             if maxDate == nil {
                 maxDate = tweet.createdAt
             } else {

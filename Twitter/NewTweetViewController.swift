@@ -25,7 +25,7 @@ class NewTweetViewController: UIViewController {
         newTweetField.becomeFirstResponder()
     }
     @IBAction func PostNewTweet(sender: UIBarButtonItem) {
-        var params = ["status": newTweetField.text] as NSMutableDictionary;
+        let params = ["status": newTweetField.text] as NSMutableDictionary;
         if let inReplyToStatus = inReplyToStatus {
             params.setValue(inReplyToStatus, forKey: "in_reply_to_status_id")
         }
@@ -35,8 +35,8 @@ class NewTweetViewController: UIViewController {
             if (error == nil) {
                 self.performSegueWithIdentifier("afterPost", sender: self)
             } else {
-                println(error)
-                println("Could not save the tweets")
+                print(error)
+                print("Could not save the tweets")
             }
         }
         

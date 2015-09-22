@@ -37,34 +37,34 @@ class TweetDetailedViewController: UIViewController {
     }
     
     @IBAction func retweet(sender: UIButton) {
-        var params = ["id": tweetId!];
+        let params = ["id": tweetId!];
         
         TwitterClient.sharedInstance.reTweet(params){(response, error) -> () in
             if (error == nil) {
                 self.performSegueWithIdentifier("afterRetweet", sender: self)
             } else {
-                println(error)
-                println("Could not save the tweets")
+                print(error)
+                print("Could not save the tweets")
             }
         }
     }
     
     @IBAction func favorite(sender: UIButton) {
-        var params = ["id": tweetId!];
+        let params = ["id": tweetId!];
         TwitterClient.sharedInstance.favorite(params){(response, error) -> () in
             if (error == nil) {
-                println("successfully favorited")
+                print("successfully favorited")
                 sender.setBackgroundImage(UIImage(named: "donefav"), forState: UIControlState.Normal)
             } else {
-                println(error)
-                println("could not favorite it")
+                print(error)
+                print("could not favorite it")
             }
         }
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "inReplyTo" {
-            var vc = segue.destinationViewController as! NewTweetViewController
+            let vc = segue.destinationViewController as! NewTweetViewController
             vc.inReplyToStatus = tweetId
         }
     }

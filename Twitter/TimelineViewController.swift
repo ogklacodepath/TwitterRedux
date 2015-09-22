@@ -44,8 +44,8 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     
 
     func fetchTweets() {
-        var params = NSDictionary()
-        var since_id = Tweet.getLastSinceId()
+        let params = NSDictionary()
+        let since_id = Tweet.getLastSinceId()
         if let since_id = since_id {
             params.setValue(since_id, forKey: "since_id")
         }
@@ -55,16 +55,16 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
                 self.allTweets = tweets
                 self.timelineTableView.reloadData()
             } else {
-                println(error)
-                println("Could not get the tweets")
+                print(error)
+                print("Could not get the tweets")
             }
             self.refreshControl?.endRefreshing()
         }
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        var cell = timelineTableView.dequeueReusableCellWithIdentifier("timeLineCell", forIndexPath: indexPath) as! TimelineTableViewCell
-        var tweet = allTweets![indexPath.row] as Tweet
+        let cell = timelineTableView.dequeueReusableCellWithIdentifier("timeLineCell", forIndexPath: indexPath) as! TimelineTableViewCell
+        let tweet = allTweets![indexPath.row] as Tweet
         
         cell.userName.text = tweet.user!.name!
         cell.userScreenName.text = tweet.user!.screenName!
@@ -78,7 +78,7 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     
     func getTimeInterVal(tweetDate: NSDate) -> String{
         var interval : String?
-        var timeDiff = Int(-tweetDate.timeIntervalSinceNow)
+        let timeDiff = Int(-tweetDate.timeIntervalSinceNow)
         if timeDiff < 10 {
             interval = "now";
         } else if timeDiff < 60{
@@ -100,8 +100,8 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "detailedSegue" {
-            var vc = segue.destinationViewController as! TweetDetailedViewController
-            var indexPath = timelineTableView.indexPathForCell(sender as! UITableViewCell)
+            let vc = segue.destinationViewController as! TweetDetailedViewController
+            let indexPath = timelineTableView.indexPathForCell(sender as! UITableViewCell)
             let tweetObj = allTweets![indexPath!.section] as Tweet
             vc.name = tweetObj.user!.name
             vc.screenName = tweetObj.user!.screenName
@@ -110,12 +110,51 @@ class TimelineViewController: UIViewController, UITableViewDelegate, UITableView
             vc.createdDate = tweetObj.createdAtString
             vc.tweetId = tweetObj.tweetId
         } else if (segue.identifier == "timelineReplyPost") {
-            var vc = segue.destinationViewController as! NewTweetViewController
-            var indexPath = timelineTableView.indexPathForCell(sender as! UITableViewCell)
+            let vc = segue.destinationViewController as! NewTweetViewController
+            let indexPath = timelineTableView.indexPathForCell(sender as! UITableViewCell!)
             let tweetObj = allTweets![indexPath!.section] as Tweet
             vc.inReplyToStatus = tweetObj.tweetId
         }
     }
+    
+    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 180
+    }
+    
+    
+    func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let cell = timelineTableView.dequeueReusableCellWithIdentifier("TimeLineHeaderCell") as! TimelineTableViewHeaderCell
+        
+        if (User.currentUser != nil) {
+            cell.profileBackgroundImageView.setImageWithURL(NSURL(string: (User.currentUser?.profileBackGroundImageUrl)!))
+            cell.followerCountLabel.text = "\(User.currentUser?.followers_count!)"
+            cell.TweetCountLabel.text = "\(User.currentUser?.statuses_count!)"
+            cell.followingCountLabel.text = "\(User.currentUser?.following!)"
+            
+        }
+        return cell
+    }
+
+    @IBAction func onTabGestureOnHeader(sender: UITapGestureRecognizer) {
+        print("on tap");
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let profileViewController = storyboard.instantiateViewControllerWithIdentifier("ProfileViewController") as! ProfileViewController
+        let mainViewController =  view.window?.rootViewController as! MainWindowViewController
+        
+        mainViewController.contentViewController = profileViewController
+    }
+}
+
+
+class TimelineTableViewHeaderCell: UITableViewCell{
+    
+    @IBOutlet weak var profileBackgroundImageView: UIImageView!
+    
+    @IBOutlet weak var followingCountLabel: UILabel!
+    
+    @IBOutlet weak var TweetCountLabel: UILabel!
+    
+    @IBOutlet weak var followerCountLabel: UILabel!
 }
 
 
@@ -129,27 +168,27 @@ class TimelineTableViewCell: UITableViewCell{
     @IBOutlet weak var tweetText: UILabel!
     var tweetId: String?
     @IBAction func favorite(sender: UIButton) {
-        var params = ["id": tweetId!];
+        let params = ["id": tweetId!];
         TwitterClient.sharedInstance.favorite(params){(response, error) -> () in
             if (error == nil) {
-                println("successfully favorited")
+                print("successfully favorited")
                 sender.setBackgroundImage(UIImage(named: "donefav"), forState: UIControlState.Normal)
             } else {
-                println(error)
-                println("could not favorite it")
+                print(error)
+                print("could not favorite it")
             }
         }
 
     }
     @IBAction func reTweet(sender: UIButton) {
-        var params = ["id": tweetId!];
+        let params = ["id": tweetId!];
         
         TwitterClient.sharedInstance.reTweet(params){(response, error) -> () in
             if (error == nil) {
-                println("retweeted")
+                print("retweeted")
             } else {
-                println(error)
-                println("Could not save the tweets")
+                print(error)
+                print("Could not save the tweets")
             }
         }
     }

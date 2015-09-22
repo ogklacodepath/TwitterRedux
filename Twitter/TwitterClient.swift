@@ -28,12 +28,12 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
         TwitterClient.sharedInstance.fetchRequestTokenWithPath("/oauth/request_token", method: "GET", callbackURL: NSURL(string: "ogklatwitter://oauth"), scope: nil,
             success: {
                 (requestToken: BDBOAuth1Credential!) -> Void in
-                println("got the requestToken")
+                print("got the requestToken")
                 
-                var authUrl = NSURL(string: "https://api.twitter.com/oauth/authorize?oauth_token=\(requestToken.token)")
+                let authUrl = NSURL(string: "https://api.twitter.com/oauth/authorize?oauth_token=\(requestToken.token)")
                 UIApplication.sharedApplication().openURL(authUrl!)
             }) { (error: NSError!) -> Void in
-                println("Failed")
+                print("Failed")
                 self.loginCompletion?(user: nil, error: error)
         }
     }
@@ -42,18 +42,18 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
         TwitterClient.sharedInstance.fetchAccessTokenWithPath("oauth/access_token", method: "POST", requestToken: BDBOAuth1Credential(queryString: url.query),
             success: {
                 (accessToken: BDBOAuth1Credential!) -> Void in
-                println("got the access token")
+                print("got the access token")
                 TwitterClient.sharedInstance.requestSerializer.saveAccessToken(accessToken)
                 
                 TwitterClient.sharedInstance.GET("1.1/account/verify_credentials.json", parameters: nil, success: { (operation: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
-                    println("It verified")
-                    println("user \(response)")
-                    var loggedInUser = User(dictionary: response as! NSDictionary)
+                    print("It verified")
+                    print("user \(response)")
+                    let loggedInUser = User(dictionary: response as! NSDictionary)
                     User.currentUser = loggedInUser
                     self.loginCompletion?(user: loggedInUser, error: nil)
                     }, failure: {
                         (operation: AFHTTPRequestOperation!, error: NSError!) -> Void in
-                        println("Could not get the user")
+                        print("Could not get the user")
                         self.loginCompletion?(user: nil, error: error)
                 })
                 
@@ -64,12 +64,12 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
     }
     func fetchTweets(params: NSDictionary?, completion: (tweets: [Tweet]?, error: NSError?) -> ()) {
         TwitterClient.sharedInstance.GET("1.1/statuses/home_timeline.json", parameters: params, success: { (operation: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
-            var allTweets = Tweet.tweetsWithArray(response as! [NSDictionary])
+            let allTweets = Tweet.tweetsWithArray(response as! [NSDictionary])
                 completion(tweets: allTweets, error: nil)
             }, failure: {
                 (operation: AFHTTPRequestOperation!, error: NSError!) -> Void in
-                println(error)
-                println("Could not get the tweets")
+                print(error)
+                print("Could not get the tweets")
                 completion(tweets: nil, error: error)
                 
         })
@@ -80,8 +80,8 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
                 completion(response: response, error: nil)
             }, failure: {
                 (operation: AFHTTPRequestOperation!, error: NSError!) -> Void in
-                println(error)
-                println("Could not save the tweets")
+                print(error)
+                print("Could not save the tweets")
                 completion(response: nil, error: error)
                 
         })
@@ -89,10 +89,10 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
     
     
     func reTweet(params: NSDictionary?, completion: (response: AnyObject?, error: NSError?) ->()) {
-        var tweetId = params!["id"] as! String
-        var url = "/1.1/statuses/retweet/\(tweetId).json"
+        let tweetId = params!["id"] as! String
+        let url = "/1.1/statuses/retweet/\(tweetId).json"
         TwitterClient.sharedInstance.POST(url, parameters: params, success: { (operation: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
-            println("successfully retweeted")
+            print("successfully retweeted")
                 completion(response: response, error: nil)
             }, failure: {
                 (operation: AFHTTPRequestOperation!, error: NSError!) -> Void in
